@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi"; // Додано FiX
+import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
+// Припускаємо, що EmployersList був оновлений відповідно до попередньої відповіді
+import { EmployersList } from "./EmployersList";
 
+// --- Типи та константи ---
 const monthNames = [
   "Січень",
   "Лютий",
@@ -18,7 +21,7 @@ const monthNames = [
 ];
 
 interface TripRange {
-  id: string; // Унікальний ID для ідентифікації при редагуванні/видаленні
+  id: string; // Унікальний ID
   start: number;
   end: number;
   city: string;
@@ -30,14 +33,18 @@ interface Employee {
   trips: TripRange[];
 }
 
-// Допоміжна функція для генерації унікального ID
+// Функція генерації ID
 const generateUniqueId = () => Math.random().toString(36).substring(2, 9);
 
 // --- Компонент Модалки Редагування ---
 interface EditTripModalProps {
   trip: TripRange;
   employeeName: string;
-  onSave: (tripId: string, employeeId: number, newTrip: Partial<TripRange>) => void;
+  onSave: (
+    tripId: string,
+    employeeId: number,
+    newTrip: Partial<TripRange>
+  ) => void;
   onDelete: (tripId: string, employeeId: number) => void;
   onClose: () => void;
   employeeId: number;
@@ -53,46 +60,61 @@ const EditTripModal: React.FC<EditTripModalProps> = ({
   employeeId,
   maxDay,
 }) => {
+  // Локальний стан модалки
   const [start, setStart] = useState(trip.start);
   const [end, setEnd] = useState(trip.end);
   const [city, setCity] = useState(trip.city);
 
   const handleSave = () => {
-    // Проста валідація
+    // Додано додаткову валідацію, що діапазон є коректним
     if (start < 1 || end > maxDay || start > end || !city) return;
     onSave(trip.id, employeeId, { start, end, city });
+    onClose();
   };
 
   const handleDelete = () => {
     onDelete(trip.id, employeeId);
+    onClose();
   };
 
   return (
-    // ЗМІНА ТУТ: видалено клас bg-gray-600 bg-opacity-50, додано абсолютне позиціонування
-    <div className="fixed inset-0 flex justify-center items-center z-50 pointer-events-none">
-      <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm border border-gray-200 pointer-events-auto transform translate-y-[-50px] transition-all duration-300 ease-out">
+    <div className="fixed inset-0 flex justify-center items-center z-50 bg-black bg-opacity-30">
+      {" "}
+      <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-sm border border-gray-200 pointer-events-auto">
+        {" "}
         <div className="flex justify-between items-center border-b pb-2 mb-4">
+          {" "}
           <h3 className="text-lg font-semibold">
             Редагування відрядження для {employeeName}
-          </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
-            <FiX size={20} />
-          </button>
-        </div>
-
+          </h3>{" "}
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-800"
+          >
+            <FiX size={20} />{" "}
+          </button>{" "}
+        </div>{" "}
         <div className="space-y-4">
+          {" "}
           <label className="block">
-            <span className="text-sm font-medium text-gray-700">Місто</span>
+            {" "}
+            <span className="text-sm font-medium text-gray-700">
+              Місто
+            </span>{" "}
             <input
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               className="mt-1 block w-full border rounded-md shadow-sm p-2"
-            />
-          </label>
+            />{" "}
+          </label>{" "}
           <div className="flex gap-4">
+            {" "}
             <label className="block">
-              <span className="text-sm font-medium text-gray-700">З дня</span>
+              {" "}
+              <span className="text-sm font-medium text-gray-700">
+                З дня
+              </span>{" "}
               <input
                 type="number"
                 value={start}
@@ -100,10 +122,13 @@ const EditTripModal: React.FC<EditTripModalProps> = ({
                 className="mt-1 block w-full border rounded-md shadow-sm p-2"
                 min={1}
                 max={maxDay}
-              />
-            </label>
+              />{" "}
+            </label>{" "}
             <label className="block">
-              <span className="text-sm font-medium text-gray-700">До дня</span>
+              {" "}
+              <span className="text-sm font-medium text-gray-700">
+                До дня
+              </span>{" "}
               <input
                 type="number"
                 value={end}
@@ -111,26 +136,26 @@ const EditTripModal: React.FC<EditTripModalProps> = ({
                 className="mt-1 block w-full border rounded-md shadow-sm p-2"
                 min={1}
                 max={maxDay}
-              />
-            </label>
-          </div>
-        </div>
-
+              />{" "}
+            </label>{" "}
+          </div>{" "}
+        </div>{" "}
         <div className="mt-6 flex justify-between">
+          {" "}
           <button
             onClick={handleDelete}
             className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
           >
-            Видалити
-          </button>
+            Видалити{" "}
+          </button>{" "}
           <button
             onClick={handleSave}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
           >
-            Зберегти зміни
-          </button>
-        </div>
-      </div>
+            Зберегти зміни{" "}
+          </button>{" "}
+        </div>{" "}
+      </div>{" "}
     </div>
   );
 };
@@ -139,27 +164,19 @@ const EditTripModal: React.FC<EditTripModalProps> = ({
 export default function MonthView() {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const [month, setMonth] = useState(today.getMonth()); // СТАН ПРАЦІВНИКІВ
+
   const [employees, setEmployees] = useState<Employee[]>([
-    {
-      id: 1,
-      name: "Іваненко Іван",
-      trips: [{ id: generateUniqueId(), start: 2, end: 5, city: "Прага" }],
-    },
-    {
-      id: 2,
-      name: "Петренко Петро",
-      trips: [{ id: generateUniqueId(), start: 3, end: 7, city: "Франкфурт" }],
-    },
-    { id: 3, name: "Коваленко Олег", trips: [] },
+    { id: 1, name: "Соцький Руслан", trips: [] },
+    { id: 2, name: "Левчук Станіслав", trips: [] },
+    { id: 3, name: "Білостенко Дмитро", trips: [] },
+    { id: 3, name: "Горбач Дмитро", trips: [] },
+    { id: 3, name: "Чолак Євгенія", trips: [] },
+    { id: 3, name: "Бирся Денис", trips: [] },
+    { id: 3, name: "Сакаль Андрй", trips: [] },
+    { id: 3, name: "Максименко Володимир", trips: [] },
   ]);
 
-  // Стан для додавання нового відрядження
-  const [rangeStart, setRangeStart] = useState<number | "">("");
-  const [rangeEnd, setRangeEnd] = useState<number | "">("");
-  const [selectedCity, setSelectedCity] = useState("");
-
-  // Стан для редагування
   interface EditingTripState {
     employeeId: number;
     trip: TripRange;
@@ -168,9 +185,8 @@ export default function MonthView() {
   const [editingTrip, setEditingTrip] = useState<EditingTripState | null>(null);
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1); // --- Функції навігації ---
 
-  // --- Функції навігації ---
   const handlePrevMonth = () => {
     if (month === 0) {
       setMonth(11);
@@ -189,17 +205,14 @@ export default function MonthView() {
     const date = new Date(year, month, day);
     const weekday = date.getDay();
     return weekday === 0 || weekday === 6;
-  };
+  }; // --- CRUD Логіка --- // *** ОНОВЛЕННЯ: Функція addTripRange приймає всі дані як аргументи ***
 
-  // --- CRUD Логіка ---
-
-  // Додавання відрядження на діапазон
-  const addTripRange = (employeeId: number) => {
-    const startNum = Number(rangeStart);
-    const endNum = Number(rangeEnd);
-
-    if (!startNum || !endNum || !selectedCity || startNum > endNum || startNum < 1 || endNum > daysInMonth) return;
-
+  const addTripRange = (
+    employeeId: number,
+    startNum: number,
+    endNum: number,
+    selectedCity: string
+  ) => {
     setEmployees((prev) =>
       prev.map((emp) => {
         if (emp.id !== employeeId) return emp;
@@ -208,27 +221,26 @@ export default function MonthView() {
           ...emp,
           trips: [
             ...emp.trips,
-            { id: generateUniqueId(), start: startNum, end: endNum, city: selectedCity },
+            {
+              id: generateUniqueId(),
+              start: startNum,
+              end: endNum,
+              city: selectedCity,
+            },
           ],
         };
       })
     );
+  }; // Початок редагування (виклик при кліку на клітинку з ✈️)
 
-    setRangeStart("");
-    setRangeEnd("");
-    setSelectedCity("");
-  };
-
-  // Початок редагування (виклик при кліку на клітинку з ✈️)
   const startEditTrip = (employee: Employee, trip: TripRange) => {
     setEditingTrip({
       employeeId: employee.id,
       employeeName: employee.name,
       trip: trip,
     });
-  };
+  }; // Редагування відрядження (з модалки)
 
-  // Редагування відрядження (з модалки)
   const editTripRange = (
     tripId: string,
     employeeId: number,
@@ -246,9 +258,8 @@ export default function MonthView() {
       })
     );
     setEditingTrip(null);
-  };
+  }; // Видалення відрядження (з модалки)
 
-  // Видалення відрядження (з модалки)
   const removeTripRange = (tripId: string, employeeId: number) => {
     setEmployees((prev) =>
       prev.map((emp) =>
@@ -258,44 +269,49 @@ export default function MonthView() {
       )
     );
     setEditingTrip(null);
-  };
+  }; // --- Рендер ---
 
-  // --- Рендер ---
   return (
     <div className="p-6 flex flex-col gap-4">
-      {/* Навігація */}
+      {/* Панель додавання відрядження */}{" "}
+      <EmployersList
+        employees={employees}
+        daysInMonth={daysInMonth} // Передаємо оновлену функцію
+        addTripRange={addTripRange} // *** ВИДАЛЕНО: rangeStart, setRangeStart, rangeEnd, setRangeEnd, selectedCity, setSelectedCity ***
+      />
+      {/* Навігація */}{" "}
       <div className="flex items-center justify-between">
+        {" "}
         <button
           onClick={handlePrevMonth}
           className="p-2 rounded hover:bg-gray-200 transition text-gray-100"
         >
-          <FiArrowLeft size={24} />
-        </button>
-
+          <FiArrowLeft size={24} />{" "}
+        </button>{" "}
         <h2 className="text-xl font-semibold">
-          {monthNames[month]} {year}
-        </h2>
-
+          {monthNames[month]} {year}{" "}
+        </h2>{" "}
         <button
           onClick={handleNextMonth}
           className="p-2 rounded hover:bg-gray-200 transition text-gray-100"
         >
-          <FiArrowRight size={24} />
-        </button>
+          <FiArrowRight size={24} />{" "}
+        </button>{" "}
       </div>
-
-      {/* Таблиця */}
+      {/* Таблиця */}{" "}
       <Card className="overflow-x-auto shadow-md">
+        {" "}
         <CardContent>
+          {" "}
           <div className="min-w-max">
-            {/* Шапка */}
+            {/* Шапка */}{" "}
             <div
               className="grid border-b pb-2 font-semibold text-sm bg-gray-50"
               style={{
                 gridTemplateColumns: `200px repeat(${daysInMonth}, 40px)`,
               }}
             >
-              <div className="pl-2">Працівник</div>
+              <div className="pl-2">Працівник</div>{" "}
               {daysArray.map((day) => (
                 <div
                   key={day}
@@ -303,12 +319,11 @@ export default function MonthView() {
                     isWeekend(day) ? "text-red-600" : ""
                   }`}
                 >
-                  {day}
+                  {day}{" "}
                 </div>
-              ))}
+              ))}{" "}
             </div>
-
-            {/* Рядки працівників */}
+            {/* Рядки працівників */}{" "}
             {employees.map((emp) => (
               <div
                 key={emp.id}
@@ -317,14 +332,13 @@ export default function MonthView() {
                   gridTemplateColumns: `200px repeat(${daysInMonth}, 40px)`,
                 }}
               >
+                {" "}
                 <div className="pl-2 py-1 font-medium text-gray-800">
-                  {emp.name}
-                </div>
-
+                  {emp.name}{" "}
+                </div>{" "}
                 {daysArray.map((day) => {
                   const weekend = isWeekend(day);
 
-                  // Знаходимо відрядження для цього дня. Беремо перше знайдене.
                   const trip = emp.trips.find(
                     (t) => day >= t.start && day <= t.end
                   );
@@ -338,71 +352,30 @@ export default function MonthView() {
                           ${!selected && weekend ? "bg-red-100" : ""}
                           ${!selected && !weekend ? "hover:bg-gray-100" : ""}
                         `}
-                      title={trip ? `${trip.city} (${trip.start}-${trip.end})` : undefined}
-                      // Клік відкриває модалку, якщо є відрядження
+                      title={
+                        trip
+                          ? `${trip.city} (${trip.start}-${trip.end})`
+                          : undefined
+                      }
                       onClick={() => selected && startEditTrip(emp, trip)}
                     >
+                      {" "}
                       {selected ? (
                         <div className="text-sm">
-                          ✈️ {trip.city.slice(0, 3)}
+                          ✈️ {trip.city.slice(0, 3)}{" "}
                         </div>
                       ) : (
                         ""
-                      )}
+                      )}{" "}
                     </div>
                   );
-                })}
+                })}{" "}
               </div>
-            ))}
-          </div>
-        </CardContent>
+            ))}{" "}
+          </div>{" "}
+        </CardContent>{" "}
       </Card>
-
-      {/* Панель додавання відрядження (залишив для простоти додавання) */}
-      <div className="border p-4 rounded-lg bg-gray-50">
-        <h3 className="text-lg font-semibold mb-2">Додати нове відрядження</h3>
-        <div className="flex flex-col gap-3">
-          {employees.map((emp) => (
-            <div key={emp.id} className="flex gap-2 items-center">
-              <span className="w-40 font-medium">{emp.name}:</span>
-              <input
-                type="number"
-                placeholder="з (день)"
-                value={rangeStart}
-                onChange={(e) => setRangeStart(Number(e.target.value))}
-                className="w-20 border rounded px-1 py-1"
-                min={1}
-                max={daysInMonth}
-              />
-              <input
-                type="number"
-                placeholder="до (день)"
-                value={rangeEnd}
-                onChange={(e) => setRangeEnd(Number(e.target.value))}
-                className="w-20 border rounded px-1 py-1"
-                min={1}
-                max={daysInMonth}
-              />
-              <input
-                type="text"
-                placeholder="Місто"
-                value={selectedCity}
-                onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-32 border rounded px-1 py-1"
-              />
-              <button
-                onClick={() => addTripRange(emp.id)}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
-                disabled={!rangeStart || !rangeEnd || !selectedCity}
-              >
-                Додати
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Модалка редагування */}
+      {/* Модалка редагування */}{" "}
       {editingTrip && (
         <EditTripModal
           trip={editingTrip.trip}
@@ -413,7 +386,7 @@ export default function MonthView() {
           employeeId={editingTrip.employeeId}
           maxDay={daysInMonth}
         />
-      )}
+      )}{" "}
     </div>
   );
 }
