@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-// *** Додано необхідні інтерфейси (можливо, їх потрібно імпортувати)
 interface TripRange {
   id: string;
   start: number;
@@ -91,9 +90,11 @@ export const EmployersList: React.FC<EmployersListProps> = ({
   };
 
   return (
-    <div className="border p-4 rounded-lg bg-gray-50">
-      <h3 className="text-lg font-semibold mb-2">Додати нове відрядження</h3>
-      <div className="flex flex-col gap-3">
+  <div className="border p-2 rounded bg-gray-50 text-sm w-full sm:max-w-[50vw] mx-auto">
+      <h3 className="text-xl font-semibold mb-2">Додати нове відрядження</h3>
+
+      {/* responsive grid: 1 column on very small, 2 on small, 3 on md+ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
         {employees.map((emp) => {
           const state = formState[emp.id];
           const canAdd =
@@ -105,38 +106,46 @@ export const EmployersList: React.FC<EmployersListProps> = ({
             Number(state.rangeEnd) <= daysInMonth;
 
           return (
-            <div key={emp.id} className="flex gap-2 items-center">
-              <span className="w-40 font-medium">{emp.name}:</span>
-              <input
-                type="number"
-                placeholder="з (день)"
-                value={state.rangeStart}
-                onChange={(e) =>
-                  handleInputChange(
-                    emp.id,
-                    "rangeStart",
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                className="w-20 border rounded px-1 py-1"
-                min={1}
-                max={daysInMonth}
-              />
-              <input
-                type="number"
-                placeholder="до (день)"
-                value={state.rangeEnd}
-                onChange={(e) =>
-                  handleInputChange(
-                    emp.id,
-                    "rangeEnd",
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                className="w-20 border rounded px-1 py-1"
-                min={1}
-                max={daysInMonth}
-              />
+            <div
+              key={emp.id}
+              className="bg-white border rounded p-2 flex flex-col gap-2"
+            >
+              <div className="font-medium text-xl truncate">{emp.name}</div>
+
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  placeholder="з"
+                  value={state.rangeStart}
+                  onChange={(e) =>
+                    handleInputChange(
+                      emp.id,
+                      "rangeStart",
+                      e.target.value === "" ? "" : Number(e.target.value)
+                    )
+                  }
+                  className="w-14 border rounded px-1 py-0.5 text-sm"
+                  min={1}
+                  max={daysInMonth}
+                />
+                <span className="text-sm">—</span>
+                <input
+                  type="number"
+                  placeholder="до"
+                  value={state.rangeEnd}
+                  onChange={(e) =>
+                    handleInputChange(
+                      emp.id,
+                      "rangeEnd",
+                      e.target.value === "" ? "" : Number(e.target.value)
+                    )
+                  }
+                  className="w-14 border rounded px-1 py-0.5 text-sm"
+                  min={1}
+                  max={daysInMonth}
+                />
+              </div>
+
               <input
                 type="text"
                 placeholder="Місто"
@@ -144,15 +153,18 @@ export const EmployersList: React.FC<EmployersListProps> = ({
                 onChange={(e) =>
                   handleInputChange(emp.id, "selectedCity", e.target.value)
                 }
-                className="w-32 border rounded px-1 py-1"
+                className="border rounded px-1 py-0.5 text-sm w-full"
               />
-              <button
-                onClick={() => handleAdd(emp.id)}
-                className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition disabled:bg-gray-400"
-                disabled={!canAdd}
-              >
-                Додати
-              </button>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={() => handleAdd(emp.id)}
+                  className="bg-green-500 text-white px-2 py-0.5 rounded hover:bg-green-600 transition disabled:bg-gray-400 text-sm"
+                  disabled={!canAdd}
+                >
+                  Додати
+                </button>
+              </div>
             </div>
           );
         })}

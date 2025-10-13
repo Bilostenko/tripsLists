@@ -170,11 +170,11 @@ export default function MonthView() {
     { id: 1, name: "Соцький Руслан", trips: [] },
     { id: 2, name: "Левчук Станіслав", trips: [] },
     { id: 3, name: "Білостенко Дмитро", trips: [] },
-    { id: 3, name: "Горбач Дмитро", trips: [] },
-    { id: 3, name: "Чолак Євгенія", trips: [] },
-    { id: 3, name: "Бирся Денис", trips: [] },
-    { id: 3, name: "Сакаль Андрй", trips: [] },
-    { id: 3, name: "Максименко Володимир", trips: [] },
+    { id: 4, name: "Горбач Дмитро", trips: [] },
+    { id: 5, name: "Чолак Євгенія", trips: [] },
+    { id: 6, name: "Бирся Денис", trips: [] },
+    { id: 7, name: "Сакаль Андрй", trips: [] },
+    { id: 8, name: "Максименко Володимир", trips: [] },
   ]);
 
   interface EditingTripState {
