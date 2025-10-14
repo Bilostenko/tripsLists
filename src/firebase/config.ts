@@ -1,9 +1,6 @@
-// src/firebase/config.ts
-
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
-// Скопійовані дані конфігурації з Кроку 1.2
 const firebaseConfig = {
   apiKey: "AIzaSyDUOvm7MSy0MA19fvkj14sYjyB_XPKvj7M",
   authDomain: "traveltracker-app-1c2fc.firebaseapp.com",
@@ -13,10 +10,6 @@ const firebaseConfig = {
   appId: "1:197953642017:web:b17756bf4ceb941bba4d60"
 };
 
-
-
-// Ініціалізація Firebase
 const app = initializeApp(firebaseConfig);
 
-// Ініціалізація Firestore і експорт
 export const db = getFirestore(app);

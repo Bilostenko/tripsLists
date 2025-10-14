@@ -1,22 +1,8 @@
-import React, { useState } from "react";
-
-interface TripRange {
-  id: string;
-  start: number;
-  end: number;
-  city: string;
-}
-
-interface Employee {
-  id: number;
-  name: string;
-  trips: TripRange[];
-}
-
+import React, { useState, useEffect } from "react";
+import type { EmployeeData as Employee } from "@/types/index"; // EmployeeData не має trips!
 interface EmployersListProps {
-  employees: Employee[];
+  employees: Employee[]; 
   daysInMonth: number;
-  // Змінюємо тип функції: тепер вона приймає всі дані форми
   addTripRange: (
     employeeId: number,
     start: number,
@@ -25,7 +11,6 @@ interface EmployersListProps {
   ) => void;
 }
 
-// Стан для одного рядка додавання
 interface AddFormState {
   rangeStart: number | "";
   rangeEnd: number | "";
@@ -37,22 +22,26 @@ export const EmployersList: React.FC<EmployersListProps> = ({
   daysInMonth,
   addTripRange,
 }) => {
-  // *** Ключова зміна: Стан для кожного працівника окремо
-  const [formState, setFormState] = useState<Record<number, AddFormState>>(
-    employees.reduce(
+  const [formState, setFormState] = useState<Record<number, AddFormState>>({});
+
+  useEffect(() => {
+    // Скидаємо/ініціалізуємо форму при зміні списку працівників (наприклад, після завантаження)
+    const initialFormState = employees.reduce(
       (acc, emp) => ({
         ...acc,
         [emp.id]: { rangeStart: "", rangeEnd: "", selectedCity: "" },
       }),
       {}
-    )
-  );
-
+    );
+    setFormState(initialFormState);
+  }, [employees]);
   const handleInputChange = (
     employeeId: number,
     field: keyof AddFormState,
     value: string | number
   ) => {
+    if (!formState[employeeId]) return; 
+
     setFormState((prev) => ({
       ...prev,
       [employeeId]: {
@@ -63,7 +52,11 @@ export const EmployersList: React.FC<EmployersListProps> = ({
   };
 
   const handleAdd = (employeeId: number) => {
-    const { rangeStart, rangeEnd, selectedCity } = formState[employeeId];
+    const state = formState[employeeId];
+    
+    if (!state) return;
+
+    const { rangeStart, rangeEnd, selectedCity } = state;
     const startNum = Number(rangeStart);
     const endNum = Number(rangeEnd);
 
@@ -75,14 +68,12 @@ export const EmployersList: React.FC<EmployersListProps> = ({
       startNum < 1 ||
       endNum > daysInMonth
     ) {
-      alert("Некоректні дані для відрядження."); // Просто для прикладу
+      alert("Некоректні дані для відрядження.");
       return;
     }
 
-    // Викликаємо функцію, передану з MonthView
     addTripRange(employeeId, startNum, endNum, selectedCity);
 
-    // Скидаємо стан форми лише для цього працівника
     setFormState((prev) => ({
       ...prev,
       [employeeId]: { rangeStart: "", rangeEnd: "", selectedCity: "" },
@@ -90,13 +81,15 @@ export const EmployersList: React.FC<EmployersListProps> = ({
   };
 
   return (
-  <div className="border p-2 rounded bg-gray-50 text-sm w-full sm:max-w-[50vw] mx-auto">
+    <div className="border p-2 rounded bg-gray-50 text-sm w-full lg:max-w-7xl xl:max-w-full mx-auto">
       <h3 className="text-xl font-semibold mb-2">Додати нове відрядження</h3>
 
-      {/* responsive grid: 1 column on very small, 2 on small, 3 on md+ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-8 gap-1">
         {employees.map((emp) => {
           const state = formState[emp.id];
+          
+          if (!state) return null; 
+
           const canAdd =
             state.rangeStart !== "" &&
             state.rangeEnd !== "" &&
