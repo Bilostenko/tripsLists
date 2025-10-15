@@ -279,7 +279,7 @@ export default function MonthView() {
     };
 
     return (
-        <div className="p-6 flex flex-col gap-4">
+        <div className="pt-2 px-6 flex flex-col gap-4">
 
             {/* Панель додавання відрядження */}
             <EmployersList
@@ -289,7 +289,7 @@ export default function MonthView() {
             />
 
             {/* ... (Навігація) ... */}
-            <div className="flex justify-center items-center my-4">
+            <div className="flex justify-center items-center my-2">
                 <button
                     onClick={() => handleMonthChange(-1)}
                     aria-label="Попередній місяць"
@@ -311,64 +311,73 @@ export default function MonthView() {
 
 
             {/* Таблиця */}
-            <Card className="overflow-x-auto shadow-md">
-                <CardContent className="p-0">
-                    {isLoading ? (
-                        <div className="text-center p-10 text-xl text-blue-500">Завантаження даних...</div>
-                    ) : (
-                        <div className="min-w-max">
-                            <div className="flex sticky left-0 top-0 bg-white z-10 border-b">
-                                <div className="w-48 p-2 font-bold border-r">Працівник</div>
-                                {daysArray.map(day => (
-                                    <div 
-                                        key={day} 
-                                        className="w-10 text-center p-2 font-bold"
-                                        style={{ backgroundColor: isWeekend(day) ? '#ffe6e6' : 'transparent' }}
-                                    >
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Рядки працівників */}
-                            {employeesWithTrips.map((emp) => (
-                                <div key={emp.id} className="flex border-b">
-                                    <div className="w-48 p-2 border-r sticky left-0 bg-white truncate">
-                                        {emp.name}
-                                    </div>
-                                    {daysArray.map((day) => {
-                                        const isTripDay = emp.trips.some(t => day >= t.start && day <= t.end);
-                                        // const trip = emp.trips.find(t => day === t.start); 
-                                        
-                                        let cellClass = "w-10 h-full py-2 border-r border-gray-200 cursor-pointer text-xs flex justify-center items-center";
-                                        
-                                        if (isTripDay) {
-                                            cellClass += ' bg-gray-800 text-white';
-                                        } else if (isWeekend(day)) {
-                                            cellClass += ' bg-red-100';
-                                        }
-
-                                        return (
-                                            <div 
-                                                key={day} 
-                                                className={cellClass}
-                                                onClick={() => isTripDay && startEditTrip(emp, day)}
-                                                title={isTripDay ? `${emp.trips.find(t => day >= t.start && day <= t.end)?.city}` : undefined}
-                                            >
-                                                {isTripDay ? (
-                                                    <span>{emp.trips.find(t => day >= t.start && day <= t.end)?.city.slice(0, 3).toUpperCase()}</span>
-                                                ) : (
-                                                    ""
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+ <Card className="overflow-x-auto shadow-md">
+            <CardContent className="p-0">
+                {isLoading ? (
+                    <div className="text-center p-10 text-xl text-blue-500">Завантаження даних...</div>
+                ) : (
+                    // div min-w-max змушує таблицю мати необхідну ширину
+                    <div className="min-w-max"> 
+                        
+                        {/* Шапка таблиці */}
+                        <div className="flex sticky left-0 top-0 bg-white z-10 border-b">
+                            
+                            {/* ПОВЕРТАЄМО: Комфортну ширину w-48 */}
+                            <div className="w-48 p-2 font-bold border-r">Працівник</div> 
+                            
+                            {daysArray.map(day => (
+                                <div 
+                                    key={day} 
+                                    className={`w-10 text-center p-2 font-bold ${isWeekend(day) ? 'bg-pink-200' : ''}`}
+                                >
+                                    {day}
                                 </div>
                             ))}
                         </div>
-                    )}
-                </CardContent>
-            </Card>
+
+                        {/* Рядки працівників */}
+                        {employeesWithTrips.map((emp) => (
+                            <div key={emp.id} className="flex border-b">
+                                
+                                {/* ПОВЕРТАЄМО: Комфортну ширину w-48 */}
+                                <div className="w-48 p-2 border-r sticky left-0 bg-white truncate">
+                                    {emp.name}
+                                </div>
+                                
+                                {daysArray.map((day) => {
+                                    const isTripDay = emp.trips.some(t => day >= t.start && day <= t.end);
+                                    
+                                        // Use fixed height so background fills whole cell
+                                        let cellClass = "w-10 h-10 border-r border-gray-200 cursor-pointer text-xs flex justify-center items-center";
+
+                                        if (isTripDay) {
+                                            cellClass += ' bg-gray-800 text-white';
+                                        } else if (isWeekend(day)) {
+                                            // Full pink background for weekend cells
+                                            cellClass += ' bg-pink-200';
+                                        }
+
+                                    return (
+                                        <div 
+                                            key={day} 
+                                            className={cellClass}
+                                            onClick={() => isTripDay && startEditTrip(emp, day)}
+                                            title={isTripDay ? `${emp.trips.find(t => day >= t.start && day <= t.end)?.city}` : undefined}
+                                        >
+                                            {isTripDay ? (
+                                                <span>{emp.trips.find(t => day >= t.start && day <= t.end)?.city.slice(0, 3).toUpperCase()}</span>
+                                            ) : (
+                                                ""
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
 
             {/* Модалка редагування відрядження */}
             {editingTrip && (
