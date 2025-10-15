@@ -226,7 +226,7 @@ export default function MonthView() {
 
     const editTripRange = async (
         tripId: string,
-        employeeId: number, 
+        _employeeId: number, 
         newTripData: Partial<TripRange>
     ) => {
         try {
